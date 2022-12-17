@@ -4,7 +4,6 @@ import random
 import numpy as np
 from gpt3 import gpt3
 from scipy.stats import spearmanr, pearsonr
-#from bloom import bloom
 
 class Intrusion():
     def __init__(self, topics, num_topics, path_save, file_path):
@@ -15,7 +14,7 @@ class Intrusion():
         self.num_topics = num_topics
         self.path_save = path_save
         self.file_path = file_path
-        self.prompt_name = 'intr_p1_v6'
+        self.prompt_name = 'intr_p2_v6'
 
 
     def create_intruder(self, num_terms=5, sample_top_topic_terms=False):
@@ -157,7 +156,7 @@ class Intrusion():
             # list_terms = str(list_of_terms[i]).replace("[", "").replace("]", "").replace("'", "")
 
             # prompt = 'What is the intruder term in the following terms? ' + list_terms
-            prompt = 'Show the least related term\nTerms: ' + list_terms + '\nAnswer: '
+            prompt = 'Select which term is the least related to all other terms\nTerms: ' + list_terms + '\nAnswer: '
 
             topic_intruder_prompt.append(
                 {
@@ -172,20 +171,22 @@ class Intrusion():
                 f.write(str(topic_intruder_prompt[i]) + '\n')
             f.close()
 
-        del list_of_terms
         return topic_intruder_prompt
 
 
     def run_gpt3(self, tip_dict):
         # run GPT-3 for all topics
+        response_list = []
         with open(self.path_save + self.prompt_name + '_gpt3.txt', 'w') as f:
             for i in range(len(tip_dict)):
                 prompt = tip_dict[i]['prompt']
                 response = str(gpt3(prompt)).replace('\n', '')
+                response_list.append(response)
                 f.write(response + '\n')
                 print(prompt, " ", response)
-                time.sleep(2)
+                time.sleep(3)
             f.close()
+        return response_list
 
 
     def load_npmis(self):

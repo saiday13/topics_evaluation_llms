@@ -12,7 +12,7 @@ class Rating():
         self.num_topics = num_topics
         self.path_save = path_save
         self.file_path = file_path
-        self.prompt_name = 'rating_p4_v4'
+        self.prompt_name = 'rating_p3_v1'
 
 
     def run_gpt3(self, prompts):
@@ -28,34 +28,29 @@ class Rating():
 
 
     def create_prompt(self):
+        '''
+        p1: Rate how related the following terms are to each other as 'very related', 'somewhat related' or 'not related'
+        p2: Rate how related the following terms are to each other in a range from 1 to 3
+        '''
 
-        #topics = self.topics
         prompts = []
         topics = [topic.split() for topic in self.topics]
         for i in range(len(self.topics)):
-            # list1 = "['file', 'window', 'problem', 'run', 'system', 'program', 'font', 'work', 'win', 'change']"
-            # list2 = "['chip', 'clipper', 'phone', 'key', 'encryption', 'government', 'system', 'write', 'nsa', 'communication']"
+            list1 = "['file', 'window', 'problem', 'run', 'system', 'program', 'font', 'work', 'win', 'change']"
+            list2 = "['chip', 'clipper', 'phone', 'key', 'encryption', 'government', 'system', 'write', 'nsa', 'communication']"
             list_ten_terms = str(topics[i][:10])
 
-            # list1 = '[file, window, problem, run, system, program, font, work, win, change]'
-            # list2 = '[chip, clipper, phone, key, encryption, government, system, write, nsa, communication]'
-            # list_ten_terms = list_ten_terms.replace("'", "")
-
-            # list1 = "['file', 'window', 'problem', 'run', 'system', 'program', 'font', 'work', 'win', 'change']"
-            # list2 = "['chip', 'clipper', 'phone', 'key', 'encryption', 'government', 'system', 'write', 'nsa', 'communication']"
+            # list1 = list1.replace("[", "").replace("]", "")
+            # list2 = list2.replace("[", "").replace("]", "")
             # list_ten_terms = list_ten_terms.replace("[", "").replace("]", "")
 
-            list1 = 'file, window, problem, run, system, program, font, work, win, change'
-            list2 = 'chip, clipper, phone, key, encryption, government, system, write, nsa, communication'
-            list_ten_terms = list_ten_terms.replace("'", "").replace("[", "").replace("]", "")
+            # list1 = list1.replace("'", "")
+            # list2 = list2.replace("'", "")
+            # list_ten_terms = list_ten_terms.replace("'", "")
 
-
-            # prompts.append("Rate how related the following terms are to each other " \
-            #          "as 'very related', 'somewhat related' or 'not related': " + list1 + "\n" \
-            #          "Answer: Very related\n\nRate how related the following terms are to each other " \
-            #          "as 'very related', 'somewhat related' or 'not related': " + list2 + "\n"
-            #          "Answer: Somewhat related\n\nRate how related the following terms are to each other " \
-            #          "as 'very related', 'somewhat related' or 'not related': " + list_ten_terms + "\nAnswer: ")
+            # list1 = 'file, window, problem, run, system, program, font, work, win, change'
+            # list2 = 'chip, clipper, phone, key, encryption, government, system, write, nsa, communication'
+            # list_ten_terms = list_ten_terms.replace("'", "").replace("[", "").replace("]", "")
 
             prompts.append("Rate how related the following terms are to each other " \
                            "as '3-very related', '2-somewhat related' or '1-not related': " + list1 + "\n" \
@@ -64,8 +59,7 @@ class Rating():
                            "Answer: 2\n\nRate how related the following terms are to each other " \
                            "as '3-very related', '2-somewhat related' or '1-not related': " + list_ten_terms + "\nAnswer: ")
 
-            # prompts.append("Rate how related the following terms are to each other " \
-            #                "in a range from 1 to 3: " + list_ten_terms)
+
 
         with open(self.path_save + self.prompt_name + '.txt', 'w') as f:
             for i in range(self.num_topics):
@@ -83,12 +77,16 @@ class Rating():
         return npmis
 
 
-    def calculate_metrics(self):
-
+    def load_responses(self):
         with open(self.path_save + self.prompt_name + '_gpt3.txt') as file:
             responses = file.readlines()
-        responses = [int(term.replace('\n', '').replace(' ', '')) for term in responses]
+        numeric_response = [int(term.replace('\n', '').replace(' ', '')) for term in responses]
 
+        return numeric_response
+
+
+    def calculate_metrics(self):
+        responses = self.load_responses()
         # calculate accuracy
         acc = np.mean(responses)
         variance = np.var(responses)
@@ -108,7 +106,7 @@ class Rating():
 
     def run_rating(self):
         print("Creation of prompts for GPT-3...")
-        #self.create_prompt()
-        print(self.calculate_metrics())
+        self.create_prompt()
+        self.calculate_metrics()
 
 
