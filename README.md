@@ -11,16 +11,18 @@ Later, GPT-2 model was exclused from further evaluation due to incoherent result
 
 The datasets used for experiments are 20Newsgroups and WikiText-103.
 
-To runc the model for intrusion or rating tasks just specify the task type:
+For the DVAE model for intrusion for 20Newsgroups dataset, run the following from the repository root:
 ```
-python soup_nuts/models/gensim/lda.py \
-    --input_dir data/examples/processed-speeches \
-    --output_dir results/mallet-speeches \
-    --eval_path train.dtm.npz \
+python transformer-tests/main.py
+    --input_dir data/20ng \
+    --output_dir results/20ng \
+    --data 20ng \
     --num_topics 50 \
-    --mallet_path soup_nuts/models/gensim/mallet-2.0.8/bin/mallet \
-    --optimize_interval 10
+    --task intrusion \
+    --model dvae
 ```
+
+Results and metrics for evaluation you can find in report file.
 
 
 ```
