@@ -11,7 +11,16 @@ Later, GPT-2 model was exclused from further evaluation due to incoherent result
 
 The datasets used for experiments are 20Newsgroups and WikiText-103.
 
-The final report you can find [hier]()
+To runc the model for intrusion or rating tasks just specify the task type:
+```
+python soup_nuts/models/gensim/lda.py \
+    --input_dir data/examples/processed-speeches \
+    --output_dir results/mallet-speeches \
+    --eval_path train.dtm.npz \
+    --num_topics 50 \
+    --mallet_path soup_nuts/models/gensim/mallet-2.0.8/bin/mallet \
+    --optimize_interval 10
+```
 
 
 ```
